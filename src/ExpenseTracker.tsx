@@ -47,11 +47,30 @@ const MONTHS = [
   "Jul","Aug","Sep","Oct","Nov","Dec",
 ];
 
-function getCat(id) {
+type Transaction = {
+  id: string;
+  title: string;
+  amount: number;
+  category: string;
+  type: "expense" | "income";
+  date: string;
+  note: string;
+};
+
+type Category = {
+  id: string;
+  label: string;
+  Icon: React.ElementType;
+  color: string;
+};
+
+type CatBreakdown = Category & { amount: number };
+
+function getCat(id: string): Category {
   return CATEGORIES.find((c) => c.id === id) || CATEGORIES[6];
 }
 
-function fmt(n) {
+function fmt(n: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
@@ -64,7 +83,7 @@ function today() {
 }
 
 // ─── Donut chart (pure SVG) ───────────────────────────────────────────────────
-function DonutChart({ data, total }) {
+function DonutChart({ data, total }: { data: CatBreakdown[]; total: number }) {
   const size = 180;
   const r = 70;
   const cx = size / 2;
@@ -126,7 +145,7 @@ function DonutChart({ data, total }) {
 }
 
 // ─── Add Expense Modal ────────────────────────────────────────────────────────
-function AddModal({ onClose, onAdd }) {
+function AddModal({ onClose, onAdd }: { onClose: () => void; onAdd: (tx: Transaction) => void }) {
   const [form, setForm] = useState({
     title: "",
     amount: "",
