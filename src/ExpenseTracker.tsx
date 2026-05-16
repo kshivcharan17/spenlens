@@ -1,10 +1,8 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   Trash2,
-  TrendingUp,
-  TrendingDown,
   Wallet,
   ShoppingCart,
   Coffee,
@@ -168,7 +166,7 @@ function AddModal({ onClose, onAdd }: { onClose: () => void; onAdd: (tx: Transac
       title: form.title.trim(),
       amount: parseFloat(form.amount),
       category: form.category,
-      type: form.type,
+      type: form.type as Transaction["type"],
       date: form.date,
       note: form.note.trim(),
     });
