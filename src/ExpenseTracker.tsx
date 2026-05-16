@@ -156,7 +156,7 @@ function AddModal({ onClose, onAdd }: { onClose: () => void; onAdd: (tx: Transac
   });
   const [error, setError] = useState("");
 
-  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const submit = () => {
     if (!form.title.trim()) return setError("Title is required.");
@@ -316,7 +316,7 @@ function AddModal({ onClose, onAdd }: { onClose: () => void; onAdd: (tx: Transac
 }
 
 // ─── Transaction row ──────────────────────────────────────────────────────────
-function TxRow({ tx, onDelete }) {
+function TxRow({ tx, onDelete }: { tx: Transaction; onDelete: (id: string) => void }) {
   const cat = getCat(tx.category);
   const d = new Date(tx.date);
   const dateStr = `${d.getDate()} ${MONTHS[d.getMonth()]}`;
@@ -372,7 +372,13 @@ function TxRow({ tx, onDelete }) {
 }
 
 // ─── Stat card ────────────────────────────────────────────────────────────────
-function StatCard({ label, amount, type, icon: Icon, sub }) {
+function StatCard({ label, amount, type, icon: Icon, sub }: {
+  label: string;
+  amount: number;
+  type: "balance" | "income" | "expense";
+  icon: React.ElementType;
+  sub?: string;
+}) {
   const colors = {
     balance: { text: "text-white", accent: "#4ade80", bg: "rgba(74,222,128,0.06)" },
     income: { text: "text-green-400", accent: "#4ade80", bg: "rgba(74,222,128,0.06)" },
@@ -419,7 +425,7 @@ function StatCard({ label, amount, type, icon: Icon, sub }) {
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function ExpenseTracker() {
-  const [transactions, setTransactions] = useState(() => {
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
     try {
       const saved = localStorage.getItem("et_transactions");
       return saved ? JSON.parse(saved) : DEMO_DATA;
@@ -439,8 +445,8 @@ export default function ExpenseTracker() {
     localStorage.setItem("et_transactions", JSON.stringify(transactions));
   }, [transactions]);
 
-  const addTransaction = (tx) => setTransactions((prev) => [tx, ...prev]);
-  const deleteTransaction = (id) =>
+  const addTransaction = (tx: Transaction) => setTransactions((prev) => [tx, ...prev]);
+  const deleteTransaction = (id: string) =>
     setTransactions((prev) => prev.filter((t) => t.id !== id));
 
   // Filtered by month
@@ -461,10 +467,10 @@ export default function ExpenseTracker() {
 
   // Category breakdown for donut
   const catBreakdown = useMemo(() => {
-    const map = {};
+    const map: Record<string, number> = {};
     monthTx
-      .filter((t) => t.type === "expense")
-      .forEach((t) => {
+      .filter((t: Transaction) => t.type === "expense")
+      .forEach((t: Transaction) => {
         map[t.category] = (map[t.category] || 0) + t.amount;
       });
     return CATEGORIES.filter((c) => map[c.id]).map((c) => ({
